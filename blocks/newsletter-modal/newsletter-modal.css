@@ -1,0 +1,90 @@
+/* Newsletter Modal Block Styles */
+.newsletter-modal {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.newsletter-modal-backdrop {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.6);
+  z-index: 1;
+}
+.newsletter-modal-content {
+  position: relative;
+  z-index: 2;
+  background: #fff;
+  color: #222;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+  padding: 3.5rem 2rem 2rem 2rem; /* increased top padding */
+  min-width: 320px;
+  max-width: 90vw;
+  text-align: center;
+  animation: modal-pop 0.3s cubic-bezier(.68,-0.55,.27,1.55);
+}
+@keyframes modal-pop {
+  0% { transform: scale(0.8); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+.newsletter-modal-close {
+  position: absolute;
+  top: 0.7rem; /* move X a bit higher */
+  right: 0.7rem;
+  background: none;
+  border: none;
+  font-size: 2rem;
+  color: #888;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+.newsletter-modal-close:hover {
+  color: #e41a1c;
+}
+.newsletter-modal-content h2 {
+  margin-top: 0;
+  margin-bottom: 1.2rem;
+  font-size: 2rem;
+  color: #e41a1c;
+  text-align: center;
+  padding: 0 1.5rem;
+}
+.newsletter-modal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: stretch;
+}
+.newsletter-modal-form label {
+  font-weight: 600;
+  text-align: left;
+}
+.newsletter-modal-form input[type="email"] {
+  padding: 0.6em 1em;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+}
+.newsletter-modal-form button[type="submit"] {
+  background: #e41a1c;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.7em 1.5em;
+  font-size: 1.1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.newsletter-modal-form button[type="submit"]:hover {
+  background: #b71c1c;
+}
+@media (max-width: 500px) {
+  .newsletter-modal-content {
+    min-width: 90vw;
+    padding: 1.2rem 0.5rem 1.5rem 0.5rem;
+  }
+} 
