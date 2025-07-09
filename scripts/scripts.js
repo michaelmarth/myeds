@@ -12,6 +12,7 @@ import {
   loadSections,
   loadCSS,
 } from './aem.js';
+import decorateNewsletterModal from '../blocks/newsletter-modal/newsletter-modal.js';
 
 /**
  * Builds hero block and prepends to main in a new section.
@@ -125,5 +126,16 @@ async function loadPage() {
   await loadLazy(document);
   loadDelayed();
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+  if (!document.querySelector('.newsletter-modal')) {
+    const block = document.createElement('div');
+    block.className = 'newsletter-modal';
+    document.body.appendChild(block);
+    // Load the block's CSS using the block loader convention
+    loadCSS(`${window.hlx.codeBasePath}/blocks/newsletter-modal/newsletter-modal.css`);
+    decorateNewsletterModal(block);
+  }
+});
 
 loadPage();
