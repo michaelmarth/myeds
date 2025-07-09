@@ -4,6 +4,130 @@ import { loadFragment } from '../fragment/fragment.js';
 // media query match that indicates mobile/tablet width
 const isDesktop = window.matchMedia('(min-width: 900px)');
 
+// Weather widget functionality
+async function loadWeatherWidget() {
+  const weatherWidget = document.createElement('div');
+  weatherWidget.className = 'weather-widget';
+  weatherWidget.innerHTML = `
+    <div class="weather-content">
+      <div class="weather-icon">🌤️</div>
+      <div class="weather-info">
+        <div class="weather-temp">--°</div>
+      </div>
+    </div>
+  `;
+
+  // Add click handler to refresh weather
+  weatherWidget.addEventListener('click', async () => {
+    const tempElement = weatherWidget.querySelector('.weather-temp');
+    const iconElement = weatherWidget.querySelector('.weather-icon');
+    
+    // Show loading state
+    tempElement.textContent = '--°';
+    iconElement.textContent = '⏳';
+    
+    try {
+      // Get user's location
+      const position = await new Promise((resolve, reject) => {
+        navigator.geolocation.getCurrentPosition(resolve, reject, {
+          timeout: 10000,
+          enableHighAccuracy: false
+        });
+      });
+
+      const { latitude, longitude } = position.coords;
+      
+      // Fetch weather data (using a free weather API)
+      const weatherResponse = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,weather_code&timezone=auto`);
+      
+      if (weatherResponse.ok) {
+        const weatherData = await weatherResponse.json();
+        const temp = Math.round(weatherData.current.temperature_2m);
+        const weatherCode = weatherData.current.weather_code;
+
+        // Update weather widget
+        tempElement.textContent = `${temp}°`;
+        // Set weather icon based on weather code
+        const weatherIcons = {
+          0: '☀️', // Clear sky
+          1: '🌤️', // Partly cloudy
+          2: '⛅', // Partly cloudy
+          3: '☁️', // Overcast
+          45: '🌫️', // Foggy
+          48: '🌫️', // Depositing rime fog
+          51: '🌧️', // Light drizzle
+          53: '🌧️', // Moderate drizzle
+          55: '🌧️', // Dense drizzle
+          61: '🌧️', // Slight rain
+          63: '🌧️', // Moderate rain
+          65: '🌧️', // Heavy rain
+          71: '❄️', // Slight snow
+          73: '❄️', // Moderate snow
+          75: '❄️', // Heavy snow
+          95: '⛈️', // Thunderstorm
+        };
+        iconElement.textContent = weatherIcons[weatherCode] || '🌤️';
+      }
+    } catch (error) {
+      console.warn('Weather widget refresh failed:', error);
+      tempElement.textContent = 'N/A';
+      iconElement.textContent = '⚠️';
+    }
+  });
+
+  try {
+    // Get user's location
+    const position = await new Promise((resolve, reject) => {
+      navigator.geolocation.getCurrentPosition(resolve, reject, {
+        timeout: 10000,
+        enableHighAccuracy: false
+      });
+    });
+
+    const { latitude, longitude } = position.coords;
+    
+    // Fetch weather data (using a free weather API)
+    const weatherResponse = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,weather_code&timezone=auto`);
+    
+    if (weatherResponse.ok) {
+      const weatherData = await weatherResponse.json();
+      const temp = Math.round(weatherData.current.temperature_2m);
+      const weatherCode = weatherData.current.weather_code;
+
+      // Update weather widget
+      const tempElement = weatherWidget.querySelector('.weather-temp');
+      const iconElement = weatherWidget.querySelector('.weather-icon');
+      tempElement.textContent = `${temp}°`;
+      // Set weather icon based on weather code
+      const weatherIcons = {
+        0: '☀️', // Clear sky
+        1: '🌤️', // Partly cloudy
+        2: '⛅', // Partly cloudy
+        3: '☁️', // Overcast
+        45: '🌫️', // Foggy
+        48: '🌫️', // Depositing rime fog
+        51: '🌧️', // Light drizzle
+        53: '🌧️', // Moderate drizzle
+        55: '🌧️', // Dense drizzle
+        61: '🌧️', // Slight rain
+        63: '🌧️', // Moderate rain
+        65: '🌧️', // Heavy rain
+        71: '❄️', // Slight snow
+        73: '❄️', // Moderate snow
+        75: '❄️', // Heavy snow
+        95: '⛈️', // Thunderstorm
+      };
+      iconElement.textContent = weatherIcons[weatherCode] || '🌤️';
+    }
+  } catch (error) {
+    console.warn('Weather widget failed to load:', error);
+    weatherWidget.querySelector('.weather-temp').textContent = 'N/A';
+    weatherWidget.querySelector('.weather-icon').textContent = '⚠️';
+  }
+
+  return weatherWidget;
+}
+
 function closeOnEscape(e) {
   if (e.code === 'Escape') {
     const nav = document.getElementById('nav');
@@ -158,6 +282,13 @@ export default async function decorate(block) {
   // prevent mobile nav behavior on window resize
   toggleMenu(nav, navSections, isDesktop.matches);
   isDesktop.addEventListener('change', () => toggleMenu(nav, navSections, isDesktop.matches));
+
+  // Load weather widget
+  const weatherWidget = await loadWeatherWidget();
+  const navTools = nav.querySelector('.nav-tools');
+  if (navTools) {
+    navTools.appendChild(weatherWidget);
+  }
 
   const navWrapper = document.createElement('div');
   navWrapper.className = 'nav-wrapper';
